@@ -1,0 +1,17 @@
+/* main.css - 重置样式 */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f0f2f5; /* 浅灰背景，适合看图 */
+  font-family: sans-serif;
+}
+
+#app {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  max-width: 100% !important; /* 强制覆盖默认的 1280px 限制 */
+  display: block; /* 覆盖默认的 grid 布局 */
+}

@@ -1,0 +1,38 @@
+自转的原理
+
+controls.autoRotate = true是库自带的自动旋转，但它经常失效或卡顿
+以下逻辑基于 “当前坐标” 计算 “下一帧坐标”，所以如果拉近了镜头，它就在近处转；拉远了，就在远处转
+
+
+const animate = () => {
+  // 1. 安检：只有图表加载完成(Graph存在) 且 允许旋转(isAutoRotating) 时才动
+  if (Graph && isAutoRotating) {
+    
+    const camera = Graph.camera();
+    
+    // 2. 定义角速度 (每次移动的弧度)
+    // 数字越大转得越快，0.001是最棒的速度
+    const angle = 0.001; 
+
+    // 3. 获取当前位置 (X 和 Z 轴)
+    // 只改变 X 和 Z，保持 Y (高度) 不变，这样就是水平绕圈
+    const x = camera.position.x;
+    const z = camera.position.z;
+
+    // 4. 二维向量旋转公式
+    // 这是高中数学的“坐标系旋转公式”：
+    // 新X = 旧X * cos(θ) - 旧Z * sin(θ)
+    // 新Z = 旧X * sin(θ) + 旧Z * cos(θ)
+    camera.position.x = x * Math.cos(angle) - z * Math.sin(angle);
+    camera.position.z = x * Math.sin(angle) + z * Math.cos(angle);
+
+    // 5. 锁定视线
+    // 无论相机飞到哪里，镜头永远死死盯着宇宙中心 (0,0,0)
+    camera.lookAt(0, 0, 0); 
+  }
+  
+  // 6. 动画循环
+  // 浏览器下一帧渲染时，再运行一次 animate
+  // 60 FPS
+  animationFrameId = requestAnimationFrame(animate);
+};
