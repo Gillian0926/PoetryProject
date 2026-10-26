@@ -2,7 +2,7 @@
   <div class="container">
     <div class="header">
       <h2 class="title">诗人星空图谱 (3D)</h2>
-      <p class="subtitle"><i class="dot tang"></i>唐代 <i class="dot song"></i>宋代 |  点击星球查看生平</p>
+      <p class="subtitle">🔴唐代 🔵宋代 |  点击星球查看生平</p>
     </div>
 
     <div class="search-panel">
@@ -314,9 +314,6 @@ onUnmounted(() => {
 .header { position: absolute; top: 20px; left: 0; right: 0; text-align: center; z-index: 10; pointer-events: none; }
 .title { margin: 0; color: #fff; text-shadow: 0 0 10px rgba(0,255,255,0.5); font-size: 24px; }
 .subtitle { margin: 5px 0; color: #aaa; font-size: 12px; }
-.subtitle .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin: 0 4px 0 8px; vertical-align: middle; }
-.subtitle .dot.tang { background: #d94f45; }
-.subtitle .dot.song { background: #4f7d8c; }
 #3d-graph { width: 100%; height: 100%; display: block; }
 
 .search-panel { position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 8px; }
