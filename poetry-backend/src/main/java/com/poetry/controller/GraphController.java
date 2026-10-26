@@ -50,17 +50,17 @@ public class GraphController {
 
         // 3. 获取连线
         String sqlLinks = """
-            SELECT a.author as source, b.author as target, (a.style_vector <-> b.style_vector) as distance
+            SELECT a.author as source, b.author as target, (a.style_vector <=> b.style_vector) as distance
             FROM poet_profiles a
             JOIN LATERAL (
                 SELECT author, style_vector 
                 FROM poet_profiles b 
                 WHERE a.author != b.author 
-                ORDER BY a.style_vector <-> b.style_vector ASC 
+                ORDER BY a.style_vector <=> b.style_vector ASC 
                 LIMIT 2  -- 每个人找最像的2个朋友
             ) b ON true
             
-            WHERE (a.style_vector <-> b.style_vector) < 0.95
+            WHERE (a.style_vector <=> b.style_vector) < 0.35
         """;
         List<Map<String, Object>> links = jdbcTemplate.queryForList(sqlLinks);
 

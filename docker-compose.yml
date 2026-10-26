@@ -1,4 +1,4 @@
-services:
+﻿services:
   postgres:
     image: pgvector/pgvector:pg16
     container_name: pgvector-db
@@ -11,4 +11,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - poetry_pgdata:/var/lib/postgresql/data
+volumes:
+  poetry_pgdata:
+    external: true
+

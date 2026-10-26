@@ -41,6 +41,7 @@ import ForceGraph3D from '3d-force-graph';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
 import axios from 'axios';
+import { API_BASE } from '../../config.js';
 
 const graphContainer = ref(null);
 
@@ -63,7 +64,7 @@ let hoverNode = null;
 
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:8080/api/graph/data');
+    const res = await axios.get(API_BASE + '/api/graph/data');
     const rawNodes = res.data.nodes;
     const rawLinks = res.data.links;
 
@@ -80,6 +81,19 @@ onMounted(async () => {
         value: l.distance
       }))
     };
+
+    // 把所有节点固定在斐波那契球面上：无论窗口多大、放大缩小，都是一个完整的大球，不会乱飘
+    const N = gData.nodes.length;
+    const R = 260 + Math.sqrt(N) * 26;
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    gData.nodes.forEach((n, i) => {
+      const y = 1 - (i / Math.max(1, N - 1)) * 2;
+      const r = Math.sqrt(Math.max(0, 1 - y * y));
+      const theta = golden * i;
+      n.fx = Math.cos(theta) * r * R;
+      n.fy = y * R;
+      n.fz = Math.sin(theta) * r * R;
+    });
   } catch (e) {
     console.error("数据加载失败", e);
     return;
@@ -99,14 +113,14 @@ onMounted(async () => {
         if (node.group === 1) color = '#0098d9'; 
         if (hoverNode && !highlightNodes.has(node)) color = '#333333'; 
 
-        const size = Math.max(1.5, Math.log(node.val || 1) * 1.5); 
+        const size = Math.max(1.2, Math.log(node.val || 1) * 1.2); 
         const geometry = new THREE.SphereGeometry(size, 16, 16);
         const material = new THREE.MeshLambertMaterial({ color: color, transparent: true, opacity: 0.9 });
         const sphere = new THREE.Mesh(geometry, material);
         group.add(sphere);
 
         // 智能标签：重要诗人或高亮时显示
-        const isImportant = node.val > 50; 
+        const isImportant = node.val > 300; 
         const isHovered = (hoverNode === node) || highlightNodes.has(node);
         if (isImportant || isHovered) {
             const sprite = new SpriteText(node.id);
@@ -154,6 +168,9 @@ onMounted(async () => {
       .onBackgroundClick(() => { isAutoRotating = true; });
 
     Graph.d3Force('charge').strength(-80);
+    // 位置已固定，不需要再跑力学：避免节点漂移成异形
+    if (Graph.cooldownTicks) Graph.cooldownTicks(0);
+    setTimeout(() => { try { Graph.zoomToFit(600, 60); } catch (e) {} }, 800);
     
     const controls = Graph.controls();
     if (controls) {
@@ -216,7 +233,7 @@ const searchDatabase = async (name) => {
   isLoading.value = true;
   
   try {
-    const res = await axios.get(`http://localhost:8080/api/poems/author?name=${name}`);
+    const res = await axios.get(`${API_BASE}/api/poems/author?name=${name}`);
     
     if (res.data.found) {
       // 构建展示 HTML
@@ -264,7 +281,7 @@ const askAIPoet = async (name) => {
   loadingText.value = 'AI 正在查阅史书...';
   isLoading.value = true;
   try {
-    const res = await axios.post('http://localhost:8080/api/ai/analyze', { era: '唐宋', type: 'poet_profile', target: name });
+    const res = await axios.post(API_BASE + '/api/ai/analyze', { era: '唐宋', type: 'poet_profile', target: name });
     panelContent.value = formatText(res.data.result);
   } catch (e) { panelContent.value = "AI 分析失败"; } finally { isLoading.value = false; }
 };
@@ -275,7 +292,7 @@ const askAIRelation = async (poetA, poetB) => {
   loadingText.value = 'AI 正在分析关系...';
   isLoading.value = true;
   try {
-    const res = await axios.post('http://localhost:8080/api/ai/analyze', { era: '唐宋', type: 'relationship', target: `${poetA}与${poetB}` });
+    const res = await axios.post(API_BASE + '/api/ai/analyze', { era: '唐宋', type: 'relationship', target: `${poetA}与${poetB}` });
     panelContent.value = formatText(res.data.result);
   } catch (e) { panelContent.value = "AI 分析失败"; } finally { isLoading.value = false; }
 };

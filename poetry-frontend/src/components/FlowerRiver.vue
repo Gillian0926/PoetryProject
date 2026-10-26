@@ -52,6 +52,7 @@ import axios from 'axios';
 import ControlPanel from './river/ControlPanel.vue';
 import RiverChart from './river/RiverChart.vue';
 import PoemModal from './river/PoemModal.vue';
+import { API_BASE } from '../config.js';
 
 const groupType = ref('dynasty'); 
 const selectedEra = ref('all');   
@@ -73,7 +74,7 @@ const fetchRiverData = async () => {
   isChartLoading.value = true;
   aiAnalysisResult.value = ''; 
   try {
-    const res = await axios.get(`http://localhost:8080/api/chart/flower?groupType=${groupType.value}`);
+    const res = await axios.get(`${API_BASE}/api/chart/flower?groupType=${groupType.value}`);
     rawData.value = {
       dynasties: res.data.dynasties,
       flowers: Array.from(res.data.flowers), 
@@ -94,7 +95,7 @@ const handleChartClick = async ({ flower, time }) => {
   poemList.value = [];
 
   try {
-    const res = await axios.get('http://localhost:8080/api/poems/by-flower', {
+    const res = await axios.get(API_BASE + '/api/poems/by-flower', {
       params: {
         flower: flower,
         timeLabel: time,
@@ -122,7 +123,7 @@ const analyzeCurrentView = async () => {
   try {
     // 发送请求，带上 type='flower'
     const res = await axios.post(
-      'http://localhost:8080/api/ai/analyze', 
+      API_BASE + '/api/ai/analyze', 
       {
         era: selectedEra.value === 'all' ? '唐宋' : selectedEra.value,
         type: 'flower' // 告诉后端要分析花卉

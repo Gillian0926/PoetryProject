@@ -210,7 +210,19 @@ const renderChart = () => {
     dataZoom: [{ type: 'slider', show: true, singleAxisIndex: 0, start: 0, end: 100, bottom: 20, height: 18 }]
   };
 
-  myChart.setOption(option, { notMerge: true });
+  try {
+    myChart.setOption(option, { notMerge: true });
+  } catch (err) {
+    // 保底：任何标注/散点异常都不能让图表白屏，回退到纯河流图
+    console.warn('[RiverChart] 完整配置渲染失败，已回退到基础视图：', err);
+    myChart.setOption({
+      color: option.color,
+      tooltip: option.tooltip,
+      legend: option.legend,
+      singleAxis: option.singleAxis,
+      series: [{ type: 'themeRiver', singleAxisIndex: 0, label: { show: false }, data: riverData }]
+    }, { notMerge: true });
+  }
   bindStandardClick();
 };
 </script>

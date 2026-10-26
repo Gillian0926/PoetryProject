@@ -1,0 +1,30 @@
+# ============ 依赖与构建产物 ============
+node_modules/
+dist/
+dist-ssr/
+target/
+*.jar
+apache-maven-3.9.6/
+
+# ============ 本地数据库数据目录（pgvector 数据，勿入库） ============
+data/
+
+# ============ 日志 / 备份 / 临时文件 ============
+logs/
+*.log
+*.bak
+*.bak-*
+tmp/
+
+# ============ 环境变量与密钥 ============
+.env
+.env.*
+application-local.properties
+# 注意：application.properties 里只允许用 ${DASHSCOPE_API_KEY} 占位，不要写真实 key
+
+# ============ IDE / 系统 ============
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

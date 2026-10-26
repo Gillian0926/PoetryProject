@@ -1,11 +1,16 @@
 <template>
   <div class="sidebar">
-    <div class="logo-area">
+    <router-link to="/" class="logo-area" title="返回首页">
       <div class="logo-icon">词</div>
       <h1 class="app-name">唐宋·大观</h1>
-    </div>
+    </router-link>
 
     <nav class="nav-menu">
+      <router-link to="/" class="nav-item" exact-active-class="active">
+        <span class="icon">🏠</span>
+        <span class="text">首页</span>
+      </router-link>
+
       <router-link to="/river" class="nav-item" active-class="active">
         <span class="icon">🌸</span>
         <span class="text">花卉河流</span>
@@ -18,7 +23,7 @@
 
       <router-link to="/search" class="nav-item" active-class="active">
         <span class="icon">🔍</span>
-        <span class="text">语义检索</span>
+        <span class="text">语义相似度检索</span>
       </router-link>
 
       <router-link to="/graph" class="nav-item" active-class="active">
@@ -51,7 +56,12 @@
   align-items: center;
   gap: 12px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background .2s;
 }
+.logo-area:hover { background: rgba(255,255,255,0.06); }
 
 .logo-icon {
   width: 36px;

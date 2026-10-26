@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 
+import Home from '../views/Home.vue'
 import FlowerRiver from '../components/FlowerRiver.vue'
 import EmotionRiver from '../components/EmotionRiver.vue'
 import SemanticSearch from '../components/search/SemanticSearch.vue' //路径修正
@@ -9,7 +10,15 @@ import PoetGraph3D2th from '../components/graph/PoetGraph3D2th.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/river' // 默认首页
+    name: 'Home',
+    component: Home,
+    meta: { title: '首页' }
+  },
+  {
+    path: '/home',
+    name: 'HomeAlias',
+    component: Home,
+    meta: { title: '首页' }
   },
   {
     path: '/river',
@@ -27,7 +36,7 @@ const routes = [
     path: '/search',
     name: 'Search',
     component: SemanticSearch,
-    meta: { title: '语义检索' }
+    meta: { title: '语义相似度检索' }
   },
   {
     path: '/graph',

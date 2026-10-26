@@ -32,17 +32,17 @@ public class PoetryController {
     // GET /api/poems/author?name=李清照
     @GetMapping("/author")
     public Map<String, Object> getPoetWorks(@RequestParam String name) {
-        // 1. 查基本信息 (朝代, 总数)
+        // 1. 查基本信息 (朝代, 总数) —— 同时兼容繁体原名与简体查询
         String infoSql = """
             SELECT dynasty, COUNT(*) as cnt 
             FROM poems 
-            WHERE author = ? 
+            WHERE author = ? OR author_simple = ?
             GROUP BY dynasty 
             ORDER BY cnt DESC 
             LIMIT 1
         """;
         
-        List<Map<String, Object>> info = jdbcTemplate.queryForList(infoSql, name);
+        List<Map<String, Object>> info = jdbcTemplate.queryForList(infoSql, name, name);
         
         if (info.isEmpty()) {
             return Map.of("found", false);
@@ -52,12 +52,19 @@ public class PoetryController {
         Long count = ((Number) info.get(0).get("cnt")).longValue();
 
         // 2. 查代表作 (取前 20 首)
-        String poemsSql = "SELECT title, content FROM poems WHERE author = ? LIMIT 20";
-        List<Map<String, Object>> poems = jdbcTemplate.queryForList(poemsSql, name);
+        String poemsSql = "SELECT author, title, content FROM poems WHERE author = ? OR author_simple = ? LIMIT 20";
+        List<Map<String, Object>> poems = jdbcTemplate.queryForList(poemsSql, name, name);
+
+        // 返回库里真实的作者名（繁体），便于前端显示
+        String canonical = name;
+        if (!poems.isEmpty() && poems.get(0).get("author") != null) {
+            canonical = (String) poems.get(0).get("author");
+        }
 
         return Map.of(
             "found", true,
-            "author", name,
+            "author", canonical,
+            "query", name,
             "dynasty", dynasty != null ? dynasty : "未知",
             "total_count", count,
             "poems", poems

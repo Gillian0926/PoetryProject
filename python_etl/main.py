@@ -1,4 +1,4 @@
-import sqlite3
+﻿import sqlite3
 import os
 import json
 import time
@@ -6,7 +6,7 @@ from dashscope import TextEmbedding, Generation
 import dashscope
 
 dashscope.api_key = os.getenv('DASHSCOPE_API_KEY')
-DB_PATH = r"C:\Users\30372\Desktop\databases\llmDealData\poetry_embedding.db"
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "poetry_embedding.db")
 
 def get_connection():
     return sqlite3.connect(DB_PATH)

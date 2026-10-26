@@ -62,7 +62,7 @@ public class AiController {
 
         String response = generateAiResponse(era, type, target, peakYear);
 
-        if (response != null) {
+        if (response != null && !response.startsWith("AI 服务繁忙")) {
             try { jdbcTemplate.update("INSERT INTO ai_analysis_cache (cache_key, content) VALUES (?, ?) ON CONFLICT (cache_key) DO NOTHING", cacheKey, response); } catch (Exception e) {}
         }
 
@@ -253,7 +253,11 @@ public class AiController {
 }
         try {
             return chatClient.prompt().user(prompt).call().content();
-        } catch (Exception e) { return "AI 服务繁忙，请稍后再试。"; }
+        } catch (Exception e) {
+            System.err.println("[AI 调用失败] " + e.getClass().getName() + ": " + e.getMessage());
+            e.printStackTrace();
+            return "AI 服务繁忙，请稍后再试。";
+        }
     }
     
     

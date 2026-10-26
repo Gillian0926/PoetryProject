@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="header">
-      <h2 class="title">Spring AI 语义检索</h2>
-      <p class="subtitle">输入任意描述，寻找意境最契合的诗词</p>
+      <h2 class="title">基于文本嵌入的语义相似度检索</h2>
+      <p class="subtitle">支持中英文跨语言检索 · 输入任意描述，寻找意境最契合的诗词</p>
     </div>
 
     <div class="search-box-wrapper">
@@ -56,6 +56,7 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { API_BASE } from '../../config.js';
 
 const searchQuery = ref('');
 const results = ref([]);
@@ -70,7 +71,7 @@ const handleSearch = async () => {
   results.value = [];
 
   try {
-    const res = await axios.get('http://localhost:8080/api/poems/search', {
+    const res = await axios.get(API_BASE + '/api/poems/search', {
       params: {
         query: searchQuery.value,
         timeLabel: 'all', 

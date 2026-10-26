@@ -23,6 +23,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import * as echarts from 'echarts';
 import axios from 'axios';
+import { API_BASE } from '../../config.js';
 
 const chartRef = ref(null);
 const aiResult = ref('');
@@ -35,7 +36,7 @@ onMounted(async () => {
     window.addEventListener('resize', () => myChart && myChart.resize());
 
     try {
-      const res = await axios.get('http://localhost:8080/api/graph/data');
+      const res = await axios.get(API_BASE + '/api/graph/data');
       const { nodes, links, categories } = res.data;
       myChart.hideLoading();
 
@@ -116,7 +117,7 @@ onUnmounted(() => {
 const askAI = async (poetA, poetB) => {
   aiResult.value = `<p>正在分析 <b>${poetA}</b> 与 <b>${poetB}</b> 的文学关系...</p>`;
   try {
-    const res = await axios.post('http://localhost:8080/api/ai/analyze', {
+    const res = await axios.post(API_BASE + '/api/ai/analyze', {
       era: '唐宋',
       type: 'relationship', // 告诉后端这是relationship
       target: `${poetA}与${poetB}`

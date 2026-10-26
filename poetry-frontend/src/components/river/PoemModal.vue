@@ -41,6 +41,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import axios from 'axios';
+import { API_BASE } from '../../config.js';
 
 // 定义接收的参数
 const props = defineProps({
@@ -103,7 +104,7 @@ const analyzeTarget = async () => {
   if (!props.flowerName) return;
   isAnalyzing.value = true;
   try {
-    const res = await axios.post('http://localhost:8080/api/ai/analyze', {
+    const res = await axios.post(API_BASE + '/api/ai/analyze', {
       era: 'all', // 针对该意象的全景分析
       type: props.type || 'emotion', // 默认为 emotion，如果是花卉页面要传 flower
       target: props.flowerName

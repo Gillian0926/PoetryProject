@@ -71,6 +71,7 @@ import ForceGraph3D from '3d-force-graph';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
 import axios from 'axios';
+import { API_BASE } from '../../config.js';
 
 const graphContainer = ref(null);
 
@@ -96,7 +97,7 @@ let hoverNode = null;
 
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:8080/api/graph/data');
+    const res = await axios.get(API_BASE + '/api/graph/data');
     const rawNodes = res.data.nodes;
     const rawLinks = res.data.links;
 
@@ -123,6 +124,38 @@ onMounted(async () => {
       isTeacher: true 
     });
 
+        // 固定种子：整体是一个球，但节点随机分布在球体内部（不只在表面），红蓝自然混色
+    {
+      let seed = 20261020;
+      const rand = () => {
+        seed = (seed + 0x6D2B79F5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+      // 先洗牌，避免按朝代成块
+      for (let i = gData.nodes.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        const tmp = gData.nodes[i];
+        gData.nodes[i] = gData.nodes[j];
+        gData.nodes[j] = tmp;
+      }
+      const N = gData.nodes.length;
+      const R = 230 + Math.sqrt(N) * 18;
+      gData.nodes.forEach(n => {
+        // 球内均匀分布：半径按立方根采样，保证里外密度一致
+        const theta = 2 * Math.PI * rand();
+        const phi = Math.acos(2 * rand() - 1);
+        const r = R * Math.cbrt(rand());
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.sin(phi) * Math.sin(theta);
+        const z = r * Math.cos(phi);
+        n.x = n.fx = x;
+        n.y = n.fy = y;
+        n.z = n.fz = z;
+      });
+    }
+
   } catch (e) { console.error("数据加载失败", e); return; }
 
   if (graphContainer.value) {
@@ -139,60 +172,69 @@ onMounted(async () => {
         if (node.group === 1) color = '#1890ff'; 
         if (node.isTeacher) color = '#1890ff'; 
 
+        node.__baseColor = color;   // 记住基础色，悬停/取消时直接改材质颜色，不重建节点
+
         if (hoverNode && !highlightNodes.has(node)) color = '#333'; 
 
         const size = Math.max(2, Math.log(node.val || 1) * 2); 
-        const geometry = new THREE.SphereGeometry(size, 32, 32);
-        const material = new THREE.MeshPhongMaterial({ 
+        const geometry = new THREE.SphereGeometry(size, 10, 10);
+        const material = new THREE.MeshLambertMaterial({ 
           color: color, transparent: true, opacity: 0.95,
           
-          emissiveIntensity: 1, shininess: 100
+          emissiveIntensity: 1
         });
         const sphere = new THREE.Mesh(geometry, material);
+        node.__sphere = sphere;
         group.add(sphere);
 
         if (hoverNode === node) {
-            const glowGeo = new THREE.SphereGeometry(size * 1.6, 32, 32);
+            const glowGeo = new THREE.SphereGeometry(size * 1.6, 8, 8);
             const glowMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.2, side: THREE.BackSide });
             const glow = new THREE.Mesh(glowGeo, glowMat);
             group.add(glow);
         }
 
-        const isImportant = node.val > 50; 
+        const isImportant = node.val > 400; 
         const isHovered = (hoverNode === node) || highlightNodes.has(node);
         if (isImportant || isHovered || node.isTeacher) {
             const sprite = new SpriteText(node.id);
             sprite.color = isHovered ? '#fff' : 'rgba(255,255,255,0.9)';
-            sprite.textHeight = isHovered ? 6 : (isImportant ? 4 : 4);
-            sprite.position.y = size + 4;
+            sprite.textHeight = isHovered ? 14 : 9;
+            sprite.backgroundColor = 'rgba(0,0,0,0.25)';
+            sprite.padding = 1;
+            sprite.position.y = size + 8;
             group.add(sprite);
         }
         return group;
       })
       
-      .linkWidth(link => highlightLinks.has(link) ? 2 : 0.5)
+      .linkWidth(link => highlightLinks.has(link) ? 2 : 0.12)
       .linkColor(link => {
         if (hoverNode && !highlightLinks.has(link)) return 'rgba(0,0,0,0)';
-        return highlightLinks.has(link) ? 'rgba(255,255,255,0.4)' : 'rgba(100, 200, 255, 0.15)';
+        return highlightLinks.has(link) ? 'rgba(255,255,255,0.5)' : 'rgba(100, 200, 255, 0.05)';
       })
       
       .onNodeHover(node => {
-        isAutoRotating = !node;
+        // 悬停不暂停旋转，也不重建节点：只改材质颜色（598 次改色比重建快几十倍）
         if ((!node && !hoverNode) || (node && hoverNode === node)) return;
+        hoverNode = node || null;
         highlightNodes.clear();
         highlightLinks.clear();
         if (node) {
           highlightNodes.add(node);
           gData.links.forEach(link => {
-            if (link.source.id === node.id || link.target.id === node.id) {
+            const s = link.source.id || link.source;
+            const t = link.target.id || link.target;
+            if (s === node.id || t === node.id) {
               highlightLinks.add(link);
-              highlightNodes.add(link.source);
-              highlightNodes.add(link.target);
+              const sn = gData.nodes.find(n => n.id === s);
+              const tn = gData.nodes.find(n => n.id === t);
+              if (sn) highlightNodes.add(sn);
+              if (tn) highlightNodes.add(tn);
             }
           });
         }
-        hoverNode = node || null;
-        Graph.refresh();
+        repaintNodes();
       })
       .onNodeClick(node => {
         flyToNode(node);
@@ -203,7 +245,13 @@ onMounted(async () => {
         isAutoRotating = false;
         askAIRelation(link.source.id, link.target.id);
       })
-      .onBackgroundClick(() => { isAutoRotating = true; });
+      .onBackgroundClick(() => {
+        isAutoRotating = true;
+        hoverNode = null;
+        highlightNodes.clear();
+        highlightLinks.clear();
+        repaintNodes();
+      });
 
     const ambientLight = new THREE.AmbientLight(0xbbbbbb);
     Graph.scene().add(ambientLight);
@@ -211,7 +259,13 @@ onMounted(async () => {
     pointLight.position.set(100, 100, 100);
     Graph.scene().add(pointLight);
 
-    Graph.d3Force('charge').strength(-120);
+    Graph.d3Force('charge', null);
+    Graph.d3Force('link', null);
+    Graph.d3Force('center', null);
+    // 位置已固定，无需再跑力学：避免节点漂移成异形
+    if (Graph.cooldownTicks) Graph.cooldownTicks(0);
+    setTimeout(() => { try { Graph.zoomToFit(600, 80); } catch (e) {} }, 900);
+    try { Graph.renderer().setPixelRatio(1); } catch (e) {}
     
     const controls = Graph.controls();
     if (controls) {
@@ -226,10 +280,19 @@ onMounted(async () => {
   }
 });
 
+const repaintNodes = () => {
+  if (!Graph || !gData.nodes) return;
+  gData.nodes.forEach(n => {
+    if (!n.__sphere || !n.__baseColor) return;
+    const dim = hoverNode && !highlightNodes.has(n);
+    n.__sphere.material.color.set(dim ? '#333333' : n.__baseColor);
+  });
+};
+
 const animate = () => {
   if (Graph && isAutoRotating) {
     const camera = Graph.camera();
-    const angle = 0.001;
+    const angle = 0.0006;
     const x = camera.position.x;
     const z = camera.position.z;
     camera.position.x = x * Math.cos(angle) - z * Math.sin(angle);
@@ -257,7 +320,7 @@ const searchPoet = async () => {
     hoverNode = node;
     highlightNodes.clear();
     highlightNodes.add(node);
-    Graph.refresh();
+    repaintNodes();
   } else {
     searchDatabase(name);
   }
@@ -293,7 +356,7 @@ const askAIPoet = async (name) => {
   loadingText.value = 'AI 正在查阅...';
   isLoading.value = true;
   try {
-    const res = await axios.post('http://localhost:8080/api/ai/analyze', { era: '唐宋', type: 'poet_profile', target: name });
+    const res = await axios.post(API_BASE + '/api/ai/analyze', { era: '唐宋', type: 'poet_profile', target: name });
     panelContent.value = formatText(res.data.result);
   } catch (e) { panelContent.value = "AI 分析失败"; } finally { isLoading.value = false; }
 };
@@ -306,7 +369,7 @@ const askAIRelation = async (poetA, poetB) => {
   loadingText.value = 'AI 正在分析关系...';
   isLoading.value = true;
   try {
-    const res = await axios.post('http://localhost:8080/api/ai/analyze', { era: '唐宋', type: 'relationship', target: `${poetA}与${poetB}` });
+    const res = await axios.post(API_BASE + '/api/ai/analyze', { era: '唐宋', type: 'relationship', target: `${poetA}与${poetB}` });
     panelContent.value = formatText(res.data.result);
   } catch (e) { panelContent.value = "AI 分析失败"; } finally { isLoading.value = false; }
 };
@@ -323,7 +386,7 @@ const openPoemList = async (name) => {
 
   try {
 
-    const res = await axios.get(`http://localhost:8080/api/poems/author?name=${name}`);
+    const res = await axios.get(`${API_BASE}/api/poems/author?name=${name}`);
 
     if (res.data.found) {
 
@@ -350,7 +413,7 @@ const searchDatabase = async (name) => {
   loadingText.value = `正在全库检索 ${name}...`;
   isLoading.value = true;
   try {
-    const res = await axios.get(`http://localhost:8080/api/poems/author?name=${name}`);
+    const res = await axios.get(`${API_BASE}/api/poems/author?name=${name}`);
     if (res.data.found) {
       const { dynasty, total_count } = res.data;
       panelContent.value = `

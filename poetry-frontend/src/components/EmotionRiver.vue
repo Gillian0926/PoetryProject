@@ -52,6 +52,7 @@ import axios from 'axios';
 import ControlPanel from './river/ControlPanel.vue';
 import RiverChart from './river/RiverChart.vue';
 import PoemModal from './river/PoemModal.vue';
+import { API_BASE } from '../config.js';
 
 const groupType = ref('dynasty'); 
 const selectedEra = ref('all');   
@@ -74,7 +75,7 @@ const fetchRiverData = async () => {
   aiAnalysisResult.value = ''; 
   try {
     // 【修复点 1】URL 变更为 /api/chart/emotion
-    const res = await axios.get(`http://localhost:8080/api/chart/emotion?groupType=${groupType.value}`);
+    const res = await axios.get(`${API_BASE}/api/chart/emotion?groupType=${groupType.value}`);
     
     rawData.value = {
       dynasties: res.data.dynasties,
@@ -99,7 +100,7 @@ const handleChartClick = async ({ flower, time }) => {
 
   try {
     // 【修复点 2】URL 变更为 /api/poems/by-emotion
-    const res = await axios.get('http://localhost:8080/api/poems/by-emotion', {
+    const res = await axios.get(API_BASE + '/api/poems/by-emotion', {
       params: {
         emotion: emotion,
         timeLabel: time,
@@ -139,7 +140,7 @@ const analyzeCurrentView = async () => {
 
     // 【修复点 3】URL 保持 /api/ai/analyze (AiController)
     const res = await axios.post(
-      'http://localhost:8080/api/ai/analyze', 
+      API_BASE + '/api/ai/analyze', 
       {
         era: eraName,
         emotion: mockEmotion,

@@ -27,7 +27,7 @@ def build_poet_profiles():
     """)
     conn.commit()
 
-    print("正在平衡提取唐宋诗人数据 (各取 Top 60)...")
+    print("正在平衡提取唐宋诗人数据 (各取 Top 300)...")
 
     # 2. 核心 SQL：唐宋分榜提取，然后合并
     # 逻辑：
@@ -42,7 +42,7 @@ def build_poet_profiles():
             GROUP BY p.author
             HAVING COUNT(*) > 5
             ORDER BY cnt DESC
-            LIMIT 60
+            LIMIT 300
         ),
         song_poets AS (
             SELECT p.author, '宋' as dynasty, COUNT(*) as cnt, AVG(t.embedding) as avg_vec
@@ -52,7 +52,7 @@ def build_poet_profiles():
             GROUP BY p.author
             HAVING COUNT(*) > 5
             ORDER BY cnt DESC
-            LIMIT 60
+            LIMIT 300
         )
         SELECT * FROM tang_poets
         UNION ALL
