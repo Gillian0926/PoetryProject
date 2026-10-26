@@ -39,7 +39,7 @@
         </div>
       </div>
 
-      <div v-else-if="panelContent && isEasterEgg" class="easter-egg-card">
+      <div v-else-if="panelContent && isEasterEgg" class="easter-egg-card" :class="{ special: isSpecialEgg }">
         <div class="egg-content" v-html="panelContent"></div>
         <span class="close-egg" @click="closePanel">×</span>
       </div>
@@ -82,6 +82,7 @@ const isLoading = ref(false);
 const loadingText = ref('');
 const currentPoetName = ref('');
 const isEasterEgg = ref(false); 
+const isSpecialEgg = ref(false);
 
 const showPoemListModal = ref(false);
 const isListLoading = ref(false);
@@ -122,6 +123,14 @@ onMounted(async () => {
       group: 99, 
       val: 800, 
       isTeacher: true 
+    });
+
+    // 紫色星球：杨欢（点击显示赠言，不走 AI 接口）
+    gData.nodes.push({
+      id: '杨欢',
+      group: 98,
+      val: 800,
+      isSpecial: true
     });
 
         // 固定种子：整体是一个球，但节点随机分布在球体内部（不只在表面），红蓝自然混色
@@ -171,6 +180,7 @@ onMounted(async () => {
         if (node.group === 0) color = '#ff4d4f'; 
         if (node.group === 1) color = '#1890ff'; 
         if (node.isTeacher) color = '#1890ff'; 
+        if (node.isSpecial) color = '#b06bff'; // 紫色星球
 
         node.__baseColor = color;   // 记住基础色，悬停/取消时直接改材质颜色，不重建节点
 
@@ -238,7 +248,8 @@ onMounted(async () => {
       })
       .onNodeClick(node => {
         flyToNode(node);
-        if (node.isTeacher) showTeacherInfo(node.id);
+        if (node.isSpecial) showSpecialInfo(node.id);
+        else if (node.isTeacher) showTeacherInfo(node.id);
         else askAIPoet(node.id);
       })
       .onLinkClick(link => {
@@ -306,6 +317,7 @@ const closePanel = () => {
   panelContent.value = '';
   currentPoetName.value = '';
   isEasterEgg.value = false; 
+  isSpecialEgg.value = false;
   isAutoRotating = true;
 };
 
@@ -315,7 +327,8 @@ const searchPoet = async () => {
   const node = gData.nodes.find(n => n.id === name);
   if (node) {
     flyToNode(node);
-    if (node.isTeacher) showTeacherInfo(name);
+    if (node.isSpecial) showSpecialInfo(name);
+    else if (node.isTeacher) showTeacherInfo(name);
     else askAIPoet(name);
     hoverNode = node;
     highlightNodes.clear();
@@ -336,6 +349,7 @@ const flyToNode = (node) => {
 
 const showTeacherInfo = (name) => {
   isEasterEgg.value = true;
+  isSpecialEgg.value = false;
   isLoading.value = false;
 
   panelContent.value = `
@@ -348,7 +362,25 @@ const showTeacherInfo = (name) => {
   `;
 };
 
+const showSpecialInfo = (name) => {
+  isEasterEgg.value = true;
+  isSpecialEgg.value = true;
+  isLoading.value = false;
+  panelContent.value = `
+    <div style="text-align: center; padding: 25px 15px;">
+      <h3 style="color: #C9A8FF; font-size: 17px; font-weight: normal; margin: 0 0 14px 0; letter-spacing: 3px;">
+        ${name}
+      </h3>
+      <div style="width: 50px; height: 1px; background: #C9A8FF; margin: 0 auto 16px; opacity: 0.45;"></div>
+      <p style="color: #E4D4FF; font-size: 15px; line-height: 1.9; letter-spacing: 1.5px; margin: 0;">
+        展卷清芬在，思君思申江
+      </p>
+    </div>
+  `;
+};
+
 const askAIPoet = async (name) => {
+  isSpecialEgg.value = false;
   isEasterEgg.value = false;
   panelTitle.value = `${name} · 人物志`;
   panelContent.value = '';
@@ -475,6 +507,11 @@ onUnmounted(() => {
   padding: 5px;
   animation: eggPopFade 0.5s ease-out;
 }
+.easter-egg-card.special {
+  border-color: rgba(176, 107, 255, 0.6);
+  box-shadow: 0 5px 24px rgba(176, 107, 255, 0.22);
+}
+
 .close-egg {
   position: absolute; top: 8px; right: 10px; 
   color: #888; cursor: pointer; font-size: 18px;
