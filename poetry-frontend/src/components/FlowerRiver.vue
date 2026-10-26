@@ -148,8 +148,8 @@ const analyzeCurrentView = async () => {
 const formatText = (text) => {
   if (!text) return '';
   return text
-    .replace(/#{2,}\s*(.*?)\s*$/gm, '<h4 style="margin: 15px 0 8px 0; color: #2c3e50; font-weight:600;">$1</h4>')
-    .replace(/\*\*(.*?)\*\*/g, '<b style="color: #0098d9;">$1</b>')
+    .replace(/#{2,}\s*(.*?)\s*$/gm, '<h4 style="margin: 15px 0 8px 0; color: #2b2723; font-weight:600;">$1</h4>')
+    .replace(/\*\*(.*?)\*\*/g, '<b style="color: #b5622f;">$1</b>')
     .replace(/^\s*-\s/gm, '• ')
     .replace(/\n/g, '<br>');
 };
@@ -163,43 +163,47 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.container { width: 100%; min-height: 100vh; padding: 20px; box-sizing: border-box; background-color: #f4f6f8; display: flex; flex-direction: column; }
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-.title { margin: 0; color: #333; font-size: 22px; }
-.subtitle { margin: 5px 0 0 0; color: #777; font-size: 13px; }
+.container { width: 100%; min-height: 100vh; padding: 20px; box-sizing: border-box; background-color: transparent; display: flex; flex-direction: column; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background-color: var(--card, #fff); background-image: var(--paper-noise); background-size: 150px 150px; background-blend-mode: multiply; border: 1px solid var(--line, #eee); padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(60,45,25,0.05); }
+.title { margin: 0; color: var(--ink-800, #333); font-size: 22px; }
+.subtitle { margin: 5px 0 0 0; color: var(--text-3, #777); font-size: 13px; }
 
 /* 粉色系按钮 (区别于情感页的紫色) */
 .ai-btn {
   margin-left: 20px;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-  color: #d93a49;
+  background: linear-gradient(135deg, #b5622f 0%, #d99a63 100%);
+  color: #fff8f2;
   border: none;
   padding: 10px 24px;
   border-radius: 30px;
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
-  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+  box-shadow: 0 4px 15px rgba(181, 98, 47, 0.26);
   transition: all 0.3s ease;
   display: flex; align-items: center; gap: 5px;
 }
-.ai-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.5); }
-.ai-btn:disabled { background: #e0e0e0; color: #999; cursor: not-allowed; box-shadow: none; transform: none; }
+.ai-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(181, 98, 47, 0.34); }
+.ai-btn:disabled { background: #b0a99c; color: #f4efe6; cursor: not-allowed; box-shadow: none; transform: none; }
 
 .ai-result-panel {
   margin-top: 20px;
-  background: white;
+  background-color: var(--card, #fff);
+  background-image: var(--paper-noise);
+  background-size: 150px 150px;
+  background-blend-mode: multiply;
+  border: 1px solid var(--line, #eee);
   border-radius: 12px;
   padding: 25px;
   display: flex; gap: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-  border-left: 5px solid #ff9a9e; /* 粉色边框 */
+  box-shadow: 0 8px 20px rgba(60,45,25,0.06);
+  border-left: 5px solid #b5622f; /* 赭橙边框 */
   animation: slideDown 0.5s ease;
 }
-.ai-avatar { font-size: 35px; background: #fff0f0; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ai-avatar { font-size: 35px; background: rgba(181, 98, 47, 0.09); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .ai-content { flex: 1; }
-.ai-content h4 { margin: 0 0 10px 0; color: #2c3e50; font-size: 18px; font-weight: 700; }
-.ai-text { margin: 0; color: #444; line-height: 1.8; font-size: 15px; text-align: justify; font-family: "Microsoft YaHei", sans-serif; }
+.ai-content h4 { margin: 0 0 10px 0; color: var(--ink-800, #2c3e50); font-size: 18px; font-weight: 700; }
+.ai-text { margin: 0; color: var(--text-2, #444); line-height: 1.8; font-size: 15px; text-align: justify; font-family: "Microsoft YaHei", sans-serif; }
 
 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 </style>

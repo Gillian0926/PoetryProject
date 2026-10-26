@@ -7,6 +7,7 @@
 <script setup>
 import { ref, onMounted, watch, onUnmounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
+import { createRiverSparkle } from '@/utils/riverSparkle';
 
 const props = defineProps({
   rawData: Object,
@@ -19,6 +20,7 @@ const emit = defineEmits(['chart-click']);
 
 const chartRef = ref(null);
 let myChart = null;
+let fx = null; // 细闪 + 流光的叠加层
 let currentRenderedLabels = [];
 
 // 【核心修改】补全所有历史时期的年份定义
@@ -46,13 +48,17 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
+  if (fx) fx.destroy();
   if (myChart) myChart.dispose();
 });
 
 const initChart = () => {
   if (chartRef.value) {
-    myChart = echarts.init(chartRef.value);
+    // SVG 渲染：细闪效果需要从真实的 <path> 上采样色带几何（canvas 渲染拿不到）
+    myChart = echarts.init(chartRef.value, null, { renderer: 'svg' });
     myChart.getZr().on('click', handleCanvasClick);
+    // 生长动画结束后自动采样并淡入光点；悬停切换色带不会重建（几何命中缓存）
+    fx = createRiverSparkle(myChart, chartRef.value, { mode: 'spark' });
   }
 };
 
@@ -165,9 +171,9 @@ const renderChart = () => {
   const option = {
     title: { text: '' },
     color: [
-      '#d93a49', '#e6b600', '#0098d9', '#2b821d', 
-      '#005eaa', '#339ca8', '#cda819', '#32a487',
-      '#c12e34', '#f2be45', '#6f5553', '#e15b52'
+      '#8c3a2b', '#b5622f', '#d9a441', '#6b8f5e',
+      '#4f7d8c', '#8f6b8a', '#c8874a', '#7a3a2b',
+      '#a3705f', '#5c7a8a', '#9a7b3f', '#6d3327'
     ],
     tooltip: {
       trigger: 'axis',
@@ -229,5 +235,5 @@ const renderChart = () => {
 
 <style scoped>
 .chart-container { width: 100%; height: 100%; }
-.chart-box { width: 100%; min-height: 500px; height: 65vh; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+.chart-box { width: 100%; min-height: 500px; height: 65vh; background-color: var(--card, #fff); background-image: var(--paper-noise); background-size: 150px 150px; background-blend-mode: multiply; border: 1px solid var(--line, #eee); border-radius: 12px; padding: 15px; box-shadow: 0 5px 15px rgba(60,45,25,0.06); position: relative; overflow: hidden; }
 </style>

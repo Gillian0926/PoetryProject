@@ -39,28 +39,24 @@
       <h2 class="section-title">四个入口</h2>
       <div class="cards">
         <router-link to="/river" class="card">
-          <div class="card-icon">🌸</div>
           <h3>花卉河流</h3>
           <p>梅花、菊花、桃花……看各类意象在不同时代的此消彼长，点选流带可查看代表诗作。</p>
           <span class="go">进入 →</span>
         </router-link>
 
         <router-link to="/emotion" class="card">
-          <div class="card-icon">❤️</div>
           <h3>情感河流</h3>
           <p>闲适、忧伤、豪迈、思念……十类情感的时间分布，与安史之乱、靖康之变遥相呼应。</p>
           <span class="go">进入 →</span>
         </router-link>
 
         <router-link to="/search" class="card">
-          <div class="card-icon">🔍</div>
           <h3>语义相似度检索</h3>
           <p>输入“写尽漂泊与孤独的秋夜”，返回意境最契合的诗词——按语义找，而不是按字面找。</p>
           <span class="go">进入 →</span>
         </router-link>
 
         <router-link to="/graph" class="card">
-          <div class="card-icon">⭐</div>
           <h3>灿若星辰</h3>
           <p>每位诗人是一颗星，诗风相近者彼此相连。点击星球读生平，点击连线看两人的风格关联。</p>
           <span class="go">进入 →</span>
@@ -92,21 +88,27 @@
 <style scoped>
 .home {
   min-height: 100%;
-  background: #f4f6f8;
+  background: transparent; /* 底色由 App 的 paper-surface 提供 */
   padding-bottom: 40px;
 }
 
 /* 顶部主视觉 */
 .hero {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 60%, #3d566e 100%);
-  color: #fff;
+  color: #fdf1d9;
   padding: 72px 60px 64px;
+  /* 赭石 → 土黄（敦煌壁画暖色），叠一层纸纹 */
+  background-color: #7a3a2b;
+  background-image:
+    var(--paper-noise-dark),
+    linear-gradient(135deg, #7a3a2b 0%, #93502f 55%, #b3763a 100%);
+  background-size: 150px 150px, cover;
+  background-blend-mode: overlay, normal;
 }
 .hero-inner { max-width: 880px; }
 .eyebrow {
   font-size: 13px;
   letter-spacing: 2px;
-  color: #9fc3d8;
+  color: #f0c986;
   margin: 0 0 14px;
 }
 .hero-title {
@@ -117,13 +119,13 @@
 }
 .hero-sub {
   font-size: 20px;
-  color: #d6e4ec;
+  color: #f7e4c8;
   margin: 0 0 20px;
 }
 .hero-desc {
   font-size: 15px;
   line-height: 1.9;
-  color: #b9cdd9;
+  color: #ecd6b4;
   margin: 0 0 28px;
   max-width: 680px;
 }
@@ -135,10 +137,10 @@
   text-decoration: none;
   transition: all .2s;
 }
-.btn.primary { background: #d93a49; color: #fff; }
-.btn.primary:hover { background: #c5313f; transform: translateY(-1px); }
-.btn.ghost { border: 1px solid rgba(255,255,255,.35); color: #fff; }
-.btn.ghost:hover { background: rgba(255,255,255,.1); }
+.btn.primary { background: var(--accent); color: #3d1f16; font-weight: 600; }
+.btn.primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+.btn.ghost { border: 1px solid rgba(253, 241, 217, 0.42); color: #fdf1d9; }
+.btn.ghost:hover { background: rgba(253, 241, 217, 0.12); }
 
 /* 统计条 */
 .stats {
@@ -150,22 +152,26 @@
   padding: 0 40px;
 }
 .stat {
-  background: #fff;
+  background-color: var(--card);
+  background-image: var(--paper-noise);
+  background-size: 150px 150px;
+  background-blend-mode: multiply;
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 20px 16px;
   text-align: center;
-  box-shadow: 0 6px 20px rgba(44, 62, 80, .10);
+  box-shadow: 0 6px 20px rgba(60, 45, 25, 0.10);
 }
 .stat-num {
   font-size: 26px;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--ink-800);
   letter-spacing: 1px;
 }
 .stat-label {
   margin-top: 6px;
   font-size: 13px;
-  color: #7b8b99;
+  color: var(--text-3);
 }
 
 /* 模块卡片 */
@@ -176,7 +182,7 @@
 }
 .section-title {
   font-size: 20px;
-  color: #2c3e50;
+  color: var(--ink-800);
   margin: 0 0 18px;
   font-weight: 700;
 }
@@ -187,61 +193,67 @@
 }
 .card {
   display: block;
-  background: #fff;
+  background-color: var(--card);
+  background-image: var(--paper-noise);
+  background-size: 150px 150px;
+  background-blend-mode: multiply;
   border-radius: 14px;
   padding: 24px 24px 20px;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, .07);
-  border: 1px solid #eef2f5;
+  box-shadow: 0 4px 16px rgba(60, 45, 25, 0.07);
+  border: 1px solid var(--line);
   transition: all .22s;
   position: relative;
 }
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(44, 62, 80, .14);
-  border-color: #dbe6ee;
+  box-shadow: 0 12px 28px rgba(60, 45, 25, 0.14);
+  border-color: #e3d6bf;
 }
-.card-icon { font-size: 26px; margin-bottom: 10px; }
+.card-icon { display: none; }
 .card h3 {
   margin: 0 0 8px;
   font-size: 18px;
-  color: #2c3e50;
+  color: var(--ink-800);
 }
 .card p {
   margin: 0 0 14px;
   font-size: 14px;
   line-height: 1.8;
-  color: #66757f;
+  color: var(--text-2);
 }
 .go {
   font-size: 13px;
-  color: #0098d9;
+  color: var(--accent);
   font-weight: 600;
 }
 
 /* 使用顺序 */
 .steps {
-  background: #fff;
+  background-color: var(--card);
+  background-image: var(--paper-noise);
+  background-size: 150px 150px;
+  background-blend-mode: multiply;
   border-radius: 14px;
   padding: 24px 28px 24px 48px;
   margin: 0;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, .06);
-  border: 1px solid #eef2f5;
+  box-shadow: 0 4px 16px rgba(60, 45, 25, 0.06);
+  border: 1px solid var(--line);
 }
 .steps li {
   font-size: 14px;
   line-height: 2;
-  color: #55636d;
+  color: var(--text-2);
 }
-.steps b { color: #2c3e50; }
+.steps b { color: var(--ink-800); }
 
 /* 页脚 */
 .foot {
   max-width: 1100px;
   margin: 46px auto 0;
   padding: 0 40px;
-  color: #93a1ab;
+  color: var(--text-3);
   font-size: 12.5px;
   line-height: 1.9;
 }

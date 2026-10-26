@@ -29,7 +29,7 @@ watch(showSidebar, (v) => {
       <span class="bars">{{ showSidebar ? '«' : '»' }}</span>
     </button>
 
-    <div class="main-content">
+    <div class="main-content paper-surface">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -49,7 +49,7 @@ watch(showSidebar, (v) => {
 
 .main-content {
   flex: 1;
-  background-color: #f4f6f8;
+  background-color: var(--paper, #f4f6f8);
   overflow-y: auto;
   position: relative;
 }
@@ -63,7 +63,7 @@ watch(showSidebar, (v) => {
   height: 26px;
   border: none;
   border-radius: 0 8px 8px 0;
-  background: rgba(44, 62, 80, 0.85);
+  background: rgba(31, 28, 25, 0.82);
   color: #fff;
   cursor: pointer;
   z-index: 1200;
@@ -76,7 +76,7 @@ watch(showSidebar, (v) => {
   transition: left 0.25s ease, background 0.2s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
-.sidebar-toggle:hover { background: #d93a49; }
+.sidebar-toggle:hover { background: var(--accent, #b3382c); }
 .sidebar-toggle.collapsed {
   left: 0;
   border-radius: 0 8px 8px 0;

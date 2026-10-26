@@ -7,27 +7,22 @@
 
     <nav class="nav-menu">
       <router-link to="/" class="nav-item" exact-active-class="active">
-        <span class="icon">🏠</span>
         <span class="text">首页</span>
       </router-link>
 
       <router-link to="/river" class="nav-item" active-class="active">
-        <span class="icon">🌸</span>
         <span class="text">花卉河流</span>
       </router-link>
 
       <router-link to="/emotion" class="nav-item" active-class="active">
-        <span class="icon">❤️</span>
         <span class="text">情感河流</span>
       </router-link>
 
       <router-link to="/search" class="nav-item" active-class="active">
-        <span class="icon">🔍</span>
         <span class="text">语义相似度检索</span>
       </router-link>
 
       <router-link to="/graph" class="nav-item" active-class="active">
-        <span class="icon">⭐</span>
         <span class="text">灿若星辰</span>
       </router-link>
     </nav>
@@ -42,12 +37,18 @@
 .sidebar {
   width: 240px;
   height: 100vh;
-  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-  color: white;
+  color: #f7e9cd;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  box-shadow: 4px 0 15px rgba(77, 36, 28, 0.22);
   z-index: 100;
+  /* 赭石底 + 壁画纸纹 */
+  background-color: #6d3327;
+  background-image:
+    var(--paper-noise-dark),
+    linear-gradient(180deg, #6d3327 0%, #4d241c 100%);
+  background-size: 150px 150px, cover;
+  background-blend-mode: overlay, normal;
 }
 
 .logo-area {
@@ -66,7 +67,8 @@
 .logo-icon {
   width: 36px;
   height: 36px;
-  background: #d93a49;
+  background: var(--accent);
+  color: #3d1f16;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -90,28 +92,24 @@
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 12px 15px;
+  padding: 12px 16px;
   margin-bottom: 8px;
   text-decoration: none;
-  color: #b0bec5;
+  color: rgba(250, 235, 209, 0.72);
   border-radius: 8px;
   transition: all 0.3s ease;
 }
 
 .nav-item:hover {
-  background: rgba(255,255,255,0.1);
-  color: white;
+  background: rgba(253, 236, 205, 0.09);
+  color: #fdf1d9;
 }
 
 .nav-item.active {
-  background: #0098d9;
-  color: white;
-  box-shadow: 0 4px 10px rgba(0,152,217,0.3);
-}
-
-.icon {
-  margin-right: 12px;
-  font-size: 18px;
+  background: var(--accent);
+  color: #3d1f16;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(217, 164, 65, 0.28);
 }
 
 .text {
@@ -122,7 +120,7 @@
 .footer {
   padding: 20px;
   font-size: 12px;
-  color: rgba(255,255,255,0.3);
+  color: rgba(250, 235, 209, 0.32);
   text-align: center;
 }
 </style>

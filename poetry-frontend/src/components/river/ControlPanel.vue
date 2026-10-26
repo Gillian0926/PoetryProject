@@ -109,13 +109,13 @@ const handleSubEraClick = (val) => {
 
 .controls { display: flex; gap: 20px; align-items: center; }
 .control-group { display: flex; align-items: center; }
-.label { font-weight: bold; font-size: 14px; margin-right: 8px; color: #555; }
+.label { font-weight: bold; font-size: 14px; margin-right: 8px; color: var(--text-2, #555); }
 
-.btn-group { display: flex; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; background: white; }
-.btn-group button { border: none; background: #fff; padding: 6px 12px; cursor: pointer; font-size: 13px; border-right: 1px solid #ddd; transition: all 0.2s; }
+.btn-group { display: flex; border: 1px solid var(--line, #ddd); border-radius: 6px; overflow: hidden; background: var(--card, #fff); }
+.btn-group button { border: none; background: var(--card, #fff); padding: 6px 12px; cursor: pointer; font-size: 13px; border-right: 1px solid var(--line, #ddd); transition: all 0.2s; color: var(--text-1, #333); }
 .btn-group button:last-child { border-right: none; }
-.btn-group button:hover { background: #f5f5f5; }
-.btn-group button.active { background: #0098d9; color: white; }
+.btn-group button:hover { background: rgba(179, 56, 44, 0.06); }
+.btn-group button.active { background: var(--accent, #0098d9); color: white; }
 
 .era-select { padding: 6px; border-radius: 4px; border: 1px solid #ddd; }
 
@@ -130,21 +130,21 @@ const handleSubEraClick = (val) => {
 
 .sub-btn-group { display: flex; gap: 8px; }
 .sub-btn-group button {
-  border: 1px solid #eee;
-  background: #fff;
+  border: 1px solid var(--line, #eee);
+  background: var(--card, #fff);
   padding: 4px 10px;
   border-radius: 15px;
   font-size: 12px;
-  color: #666;
+  color: var(--text-2, #666);
   cursor: pointer;
   transition: all 0.2s;
 }
-.sub-btn-group button:hover { border-color: #0098d9; color: #0098d9; }
+.sub-btn-group button:hover { border-color: var(--accent, #0098d9); color: var(--accent, #0098d9); }
 .sub-btn-group button.active {
-  background: #0098d9;
-  border-color: #0098d9;
+  background: var(--accent, #0098d9);
+  border-color: var(--accent, #0098d9);
   color: white;
-  box-shadow: 0 2px 5px rgba(0,152,217,0.2);
+  box-shadow: 0 2px 5px rgba(179, 56, 44, 0.2);
 }
 
 /* 动画 */

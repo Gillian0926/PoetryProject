@@ -1,0 +1,72 @@
+/* paper.css —— 敦煌矿物色 + 宣纸质感（第二档纸纹 0.22）
+ *
+ * 质感实现（无图片素材）：
+ *   1) 内联 SVG feTurbulence 噪声（150×150 平铺）→ 纸纤维颗粒
+ *   2) 极淡的斜向细纹 → 帘纹/纤维方向感
+ *   3) 顶部微亮 + 边角压深 → 纸放久了的边
+ * 全部用 background 多图层 + background-blend-mode 完成，缩放不失真、无额外请求。
+ */
+
+:root {
+  /* 赭石 / 墨（敦煌壁画的暖暗部） */
+  --ink-900: #4d241c;
+  --ink-800: #5e2b21;
+  --ink-700: #6d3327;
+  --ink-600: #7a3a2b;
+
+  /* 纸 / 壁画底 */
+  --paper: #f8f1e2;
+  --paper-soft: #fbf6ec;
+  --card: #fffaf0;
+  --line: #f0e2c8;
+
+  /* 字 */
+  --text-1: #40301f;
+  --text-2: #7a6448;
+  --text-3: #a08a6b;
+
+  /* 土黄（点睛） */
+  --accent: #d9a441;
+  --accent-dark: #c08f2f;
+  --accent-soft: rgba(217, 164, 65, 0.12);
+
+  /* 石青 / 石绿（次要色） */
+  --azurite: #4f7d8c;
+  --malachite: #6b8f5e;
+  --ochre: #b5622f;
+  --cinnabar: #8c3a2b;
+
+  /* 噪声层（浅底 0.22 / 深底 0.16） */
+  --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");
+  --paper-noise-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+}
+
+/* 浅色纸面：给大面积内容区用 */
+.paper-surface {
+  background-color: var(--paper);
+  background-image:
+    var(--paper-noise),
+    repeating-linear-gradient(118deg, rgba(140, 112, 70, 0.032) 0 1px, transparent 1px 4px),
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 250, 235, 0.6), transparent 62%),
+    radial-gradient(140% 110% at 50% 110%, rgba(120, 86, 44, 0.08), transparent 58%);
+  background-size: 150px 150px, auto, cover, cover;
+  background-blend-mode: multiply, normal, normal, normal;
+}
+
+/* 深色墨面：侧边栏 / 主视觉 */
+.paper-ink {
+  background-color: var(--ink-700);
+  background-image:
+    var(--paper-noise-dark),
+    linear-gradient(160deg, var(--ink-700) 0%, var(--ink-900) 100%);
+  background-size: 150px 150px, cover;
+  background-blend-mode: overlay, normal;
+}
+
+/* 卡片：纸白 + 极淡纹理 */
+.paper-card {
+  background-color: var(--card);
+  background-image: var(--paper-noise);
+  background-size: 150px 150px;
+  background-blend-mode: multiply;
+}

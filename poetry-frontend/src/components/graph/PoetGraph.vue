@@ -2,7 +2,7 @@
   <div class="container">
     <div class="header">
       <h2 class="title">诗人风格关系图谱</h2>
-      <p class="subtitle">基于 AI 向量计算文风相似度 | 🔴唐代 🔵宋代</p>
+      <p class="subtitle">基于 AI 向量计算文风相似度 | <i class="dot tang"></i>唐代 <i class="dot song"></i>宋代</p>
     </div>
 
     <div class="graph-container" ref="chartRef"></div>
@@ -151,6 +151,9 @@ const formatText = (text) => {
 .header { text-align: center; margin-bottom: 10px; flex-shrink: 0; }
 .title { margin: 0; color: #2c3e50; letter-spacing: 1px; }
 .subtitle { margin: 5px 0; color: #777; font-size: 13px; }
+.subtitle .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin: 0 4px 0 8px; vertical-align: middle; }
+.subtitle .dot.tang { background: #d94f45; }
+.subtitle .dot.song { background: #4f7d8c; }
 
 .graph-container { 
   flex: 1; 
